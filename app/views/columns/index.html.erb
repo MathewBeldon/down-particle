@@ -1,0 +1,30 @@
+<h1>All Columns</h1>
+
+<%= link_to "New Column", new_column_path, class: "btn btn-primary" %>
+
+<div class="columns-container">
+  <% @columns.each do |column| %>
+    <div class="column-card">
+      <h2><%= column.title %></h2>
+
+      <% if column.tasks.any? %>
+        <ul class="task-list">
+          <% column.tasks.each do |task| %>
+            <li>
+              <strong><%= task.name %></strong><br>
+              <%= task.description %><br>
+              <small>
+                <%= link_to "Edit", edit_task_path(task) %> |
+                <%= link_to "Delete", task, method: :delete, data: { confirm: "Really?" } %>
+              </small>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p><em>No tasks yet</em></p>
+      <% end %>
+
+      <%= link_to "Add Task", new_column_task_path(column), class: "btn btn-sm btn-secondary" %>
+    </div>
+  <% end %>
+</div>
