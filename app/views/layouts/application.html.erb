@@ -23,8 +23,10 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   </head>
 
-  <body>
+  <body class="bg-gray-900 text-gray-100 min-h-screen">
     <%= render 'home/header' %>
-    <%= yield %>
+    <main class="bg-gray-900">
+      <%= yield %>
+    </main>
   </body>
 </html>

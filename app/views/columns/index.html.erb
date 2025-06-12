@@ -1,30 +1,69 @@
-<h1>All Columns</h1>
+<%
+  # Define color classes for each column (status)
+  status_styles = [
+    { name: 'To-do', tag: 'bg-red-600/20 text-red-300', card: 'border-red-600/30', count: 'text-red-300' },
+    { name: 'WIP', tag: 'bg-yellow-500/20 text-yellow-200', card: 'border-yellow-400/30', count: 'text-yellow-200' },
+    { name: 'Complete', tag: 'bg-green-600/20 text-green-300', card: 'border-green-600/30', count: 'text-green-300' },
+    { name: 'Other', tag: 'bg-gray-500/20 text-gray-300', card: 'border-gray-500/30', count: 'text-gray-300' }
+  ]
+%>
 
-<%= link_to "New Column", new_column_path, class: "btn btn-primary" %>
-
-<div class="columns-container">
-  <% @columns.each do |column| %>
-    <div class="column-card">
-      <h2><%= column.title %></h2>
-
-      <% if column.tasks.any? %>
-        <ul class="task-list">
-          <% column.tasks.each do |task| %>
-            <li>
-              <strong><%= task.name %></strong><br>
-              <%= task.description %><br>
-              <small>
-                <%= link_to "Edit", edit_task_path(task) %> |
-                <%= link_to "Delete", task, method: :delete, data: { confirm: "Really?" } %>
-              </small>
-            </li>
+<div class="h-screen p-4 bg-gray-900">
+  <div class="flex flex-nowrap gap-6 overflow-x-auto h-full">
+    <% @columns.each_with_index do |column, idx| %>
+      <% style = status_styles[idx % status_styles.length] %>
+      <div class="flex flex-col flex-1 min-w-[320px] max-w-[400px] bg-gray-800 rounded-xl px-3 py-3 min-h-[60vh]">
+        <!-- Column Header -->
+        <div class="flex flex-row justify-between items-center mb-3 mx-1">
+          <div class="flex items-center">
+            <h2 class="<%= style[:tag] %> text-xs font-semibold px-2 py-1 rounded mr-2"> <%= column.title %> </h2>
+            <span class="<%= style[:count] %> text-xs font-bold"> <%= column.tasks.count %> </span>
+          </div>
+          <div class="flex items-center text-gray-500">
+            <button class="mr-2 text-xl hover:text-gray-300">&#8230;</button>
+            <%= link_to new_column_task_path(column), class: "text-xl hover:text-green-400" do %>+<% end %>
+          </div>
+        </div>
+        <!-- Task Cards -->
+        <div class="flex-1 flex flex-col gap-3">
+          <% if column.tasks.any? %>
+            <% column.tasks.each do |task| %>
+              <div class="p-3 rounded-lg shadow-sm border-2 <%= style[:card] %> bg-gray-900/80">
+                <h3 class="text-sm font-semibold mb-2 text-gray-100"><%= task.name %></h3>
+                <span class="<%= style[:tag] %> text-xs font-semibold px-2 py-1 rounded mb-2 inline-block"> <%= column.title %> </span>
+                <div class="flex flex-row items-center mt-2">
+                  <div class="bg-gray-600 rounded-full w-5 h-5 mr-2 flex items-center justify-center text-xs text-gray-200 font-bold">
+                    <%= task.name[0]&.upcase || '?' %>
+                  </div>
+                  <span class="text-xs text-gray-400">Assignee</span>
+                </div>
+                <div class="flex flex-row flex-wrap gap-2 mt-2">
+                  <span class="text-xs text-gray-500">Created: <%= task.created_at.strftime('%b %d, %Y') %></span>
+                  <% if task.description.present? %>
+                    <span class="text-xs text-gray-500">• <%= truncate(task.description, length: 30) %></span>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="text-center text-gray-500 text-xs py-8">No tasks yet</div>
           <% end %>
-        </ul>
-      <% else %>
-        <p><em>No tasks yet</em></p>
+        </div>
+        <!-- Add Task Button -->
+        <div class="flex flex-row items-center text-gray-500 mt-4 px-1 cursor-pointer hover:text-green-400">
+          <%= link_to new_column_task_path(column), class: "flex items-center" do %>
+            <span class="rounded mr-2 text-2xl">+</span>
+            <span class="pt-1 rounded text-sm">New</span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+    <!-- Add Column Card -->
+    <div class="flex flex-col flex-1 min-w-[320px] max-w-[400px] bg-gray-800/60 rounded-xl items-center justify-center min-h-[60vh] border-2 border-dashed border-gray-600 hover:border-green-400 transition-all">
+      <%= link_to new_column_path, class: "flex flex-col items-center text-gray-400 hover:text-green-400 p-4" do %>
+        <span class="text-4xl mb-2">+</span>
+        <span class="text-sm font-semibold">Add Column</span>
       <% end %>
-
-      <%= link_to "Add Task", new_column_task_path(column), class: "btn btn-sm btn-secondary" %>
     </div>
-  <% end %>
+  </div>
 </div>
